@@ -5,7 +5,7 @@
 *	Author:  Petar Nikolov														*
 *																				*
 *																				*
-*	This library provide image processing and computer vision algorithms.		*
+*	This library provide image processing algorithms.							*
 *	It can be used in any projects for free.									*
 *   If you find some errors, or if you want to contact me for any reason - 		*
 *	please use my e-mail:														*
@@ -31,8 +31,7 @@ int main()
 	int i,j, Algotype, Threshold;
 	float hui;
 	FILE *LUT = NULL;
-	struct Image *Layers = NULL;
-	struct Image *ptrToImage = NULL;
+
 	/*OPEN*/
 	Image Img_src = ReadImage("..\\InputImages\\noise.jpg");
 	
@@ -47,16 +46,11 @@ int main()
 	
 	struct Histogram hist;
 
-	struct ColorPoint_RGB ColorPoint;
 	struct WhitePoint WhitePoint_lab1;
 	struct WhitePoint WhitePoint_lab2;
 
-	CentralPoint.X = 150;// Img_dst.Width / 2 - 200;
-	CentralPoint.Y = 300;// Img_dst.Height / 2 + 200;
-	
-	ColorPoint.R = 230;
-	ColorPoint.G = 150;
-	ColorPoint.B = 140;	
+	CentralPoint.X = Img_dst.Width / 2;
+	CentralPoint.Y = Img_dst.Height / 2;
 
 	// The color temperature of the imput image
 	SetWhiteBalanceValues(&WhitePoint_lab1, 10);
@@ -142,7 +136,6 @@ int main()
 
 	/* DESTROY images*/
 
-	if(Layers != NULL)DestroyImage(Layers);
 	DestroyImage(&Img_src);
 	//DestroyImage(&Img_dst);
 	//DestroyImage(&Img_dst2);

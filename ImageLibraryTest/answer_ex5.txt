@@ -58,7 +58,7 @@ struct Image RotateImage(struct Image *Img_src, struct Image *Img_dst, float Rot
 					if(Img_dst->rgbpix[(i+1) * Img_dst->Num_channels * Img_dst->Width + Img_dst->Num_channels * (j-1) + z] != 0) {someValue += Img_dst->rgbpix[(i+1) * Img_dst->Num_channels * Img_dst->Width + Img_dst->Num_channels * (j-1) + z]; valToDelene++;}
 					if(Img_dst->rgbpix[(i+1) * Img_dst->Num_channels * Img_dst->Width + Img_dst->Num_channels * (j+1) + z] != 0) {someValue += Img_dst->rgbpix[(i+1) * Img_dst->Num_channels * Img_dst->Width + Img_dst->Num_channels * (j+1) + z]; valToDelene++;}
 
-					if(someValue != 0  &&  valToDelene >= 4) 
+					if(someValue != 0  &&  valToDelene >= 3) 
 					{
 						if(someValue / (valToDelene) <=255) 
 							Img_dst->rgbpix[i * Img_dst->Num_channels * Img_dst->Width + Img_dst->Num_channels * j + z] = someValue / (valToDelene);
