@@ -1,0 +1,44 @@
+/* exercise 3 - Noise correction */
+
+/* 
+	Correct    N O I S E 
+*/
+struct Image NoiseCorrection(struct Image *Img_src, struct Image *Img_dst, float threshold, int Algotype)
+{
+	int i, j, z;
+	int CurrentValue;
+	int ProbablityValue = 0;
+	int Algotype = 1;
+	int threshold = 35;
+	if (Img_src->Num_channels != Img_dst->Num_channels)
+		return *Img_dst;
+
+	memcpy(Img_dst, Img_src,sizeof(Image));
+
+	/* if the current pixel is X % different from the pixels around -> it is noise*/
+
+	for (i = 1; i < Img_dst->Height - 1; i++)
+	{
+		for (j = 1; j < Img_dst->Width - 1; j++)
+		{
+			for (z = 0; z < Img_dst->Num_channels; z++)
+			{
+				ProbablityValue = 0;
+
+				CurrentValue = Img_src->rgbpix[Img_dst->Num_channels * ( i *  Img_src->Width + j ) + z];
+
+				if ((threshold + CurrentValue < Img_src->rgbpix[(i - 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j + 1) + z]) || ( CurrentValue >  threshold +  Img_src->rgbpix[(i - 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j + 1) + z])) ProbablityValue++;
+				if ((threshold + CurrentValue < Img_src->rgbpix[(i + 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j + 1) + z]) || ( CurrentValue >  threshold +  Img_src->rgbpix[(i + 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j + 1) + z])) ProbablityValue++;
+				if ((threshold + CurrentValue < Img_src->rgbpix[(i - 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j - 1) + z]) || ( CurrentValue >  threshold +  Img_src->rgbpix[(i - 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j - 1) + z])) ProbablityValue++;
+				if ((threshold + CurrentValue < Img_src->rgbpix[(i + 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j - 1) + z]) || ( CurrentValue >  threshold +  Img_src->rgbpix[(i + 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j - 1) + z])) ProbablityValue++;
+
+				if (ProbablityValue >= 3)
+				{
+					Img_dst->rgbpix[(i)* Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * j + z] = (Img_src->rgbpix[(i - 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j-1) + z] + Img_src->rgbpix[(i + 1) * Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j-1) + z] + Img_src->rgbpix[(i -1)* Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j + 1) + z] + Img_src->rgbpix[(i+1)* Img_dst->Num_channels * Img_src->Width + Img_dst->Num_channels * (j + 1) + z]) / 4;
+				}
+			}
+		}
+	}
+	
+	return *Img_dst;
+}

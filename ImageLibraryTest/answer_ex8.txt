@@ -1,0 +1,115 @@
+/*Exercise 8 - MORPH operators*/
+
+
+/*
+	M O R P H O L O G Y  -  Dilation
+*/
+struct Image MorphDilate(struct Image *Img_src, struct Image *Img_dst, int ElementSize, int NumberOfIterations)
+{
+	int i, j, l, k, z;
+	//float StructureElement[9] = { 0, 1, 0, 1, 1, 1, 0, 1, 0 };
+	float StructureElement[9] = { 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+
+	/* Only Grayscale is currently supported */
+	if ((Img_src->Num_channels != Img_dst->Num_channels) && Img_dst->Num_channels != 1)
+		return *Img_dst;
+	if (ElementSize < 3) ElementSize = 3;
+	if (NumberOfIterations < 0) NumberOfIterations = 0;
+	if ((Img_src->Width != Img_dst->Width) || (Img_src->Height != Img_dst->Height)) SetDestination(Img_src, Img_dst);
+	
+	ConvolutionBinary(Img_src->rgbpix, Img_dst->rgbpix, Img_src->Height, Img_src->Width, &StructureElement, ElementSize, 0);
+
+	if (NumberOfIterations % 2 == 0)
+	{
+		if (NumberOfIterations > 0 && NumberOfIterations % 2 == 0)
+		{
+			NumberOfIterations -= 1;
+			if (NumberOfIterations != 0) MorphDilate(Img_src, Img_dst, ElementSize, NumberOfIterations);
+			return *Img_dst;
+		}
+	}
+	else
+	{
+		if (NumberOfIterations > 0 && NumberOfIterations % 2 == 1)
+		{
+			NumberOfIterations -= 1;
+			if (NumberOfIterations != 0) MorphDilate(Img_dst, Img_src, ElementSize, NumberOfIterations);
+			return *Img_src;
+		}
+	}
+	
+}
+
+/*
+	M O R P H O L O G Y  -  Erosion
+*/
+struct Image MorphErode(struct Image *Img_src, struct Image *Img_dst, int ElementSize, int NumberOfIterations)
+{
+	int i, j, l, k, z;
+	float StructureElement[9] = { 0, 1, 0, 1, 1, 1, 0, 1, 0 };
+
+	if (Img_src->Num_channels != Img_dst->Num_channels)
+		return *Img_dst;
+	if (ElementSize < 3) ElementSize = 3;
+	if (NumberOfIterations < 0) NumberOfIterations = 0;
+	
+	if ((Img_src->Width != Img_dst->Width) || (Img_src->Height != Img_dst->Height)) SetDestination(Img_src, Img_dst);
+
+	
+	ConvolutionBinary(Img_src->rgbpix, Img_dst->rgbpix, Img_src->Height, Img_src->Width, StructureElement, ElementSize, 1);
+
+	if (NumberOfIterations % 2 == 0)
+	{
+		if (NumberOfIterations > 0 && NumberOfIterations % 2 == 0)
+		{
+			NumberOfIterations -= 1;
+			if(NumberOfIterations != 0) MorphErode(Img_src, Img_dst, ElementSize, NumberOfIterations);
+			return *Img_dst;
+		}
+	}
+	else
+	{
+		if (NumberOfIterations > 0 && NumberOfIterations % 2 == 1)
+		{
+			NumberOfIterations -= 1;
+			if (NumberOfIterations != 0) MorphErode(Img_dst, Img_src, ElementSize, NumberOfIterations);
+			return *Img_src;
+		}
+	}
+}
+
+
+/*
+	M O R P H O L O G Y  -  Opening
+*/
+struct Image MorphOpen(struct Image *Img_src, struct Image *Img_dst, int ElementSize, int NumberOfIterations)
+{
+	struct Image BackupImage = CreateNewImage(&BackupImage, Img_src->Width, Img_src->Height, 1, COLORSPACE_GRAYSCALE);
+	
+	MorphErode(Img_src, Img_dst, ElementSize, NumberOfIterations);
+	MorphDilate(Img_dst, &BackupImage, ElementSize, NumberOfIterations);
+
+	memcpy(Img_dst->rgbpix, BackupImage.rgbpix, Img_dst->Width * Img_dst->Height * sizeof(unsigned char));
+	//memcpy(Img_dst, &BackupImage, sizeof(BackupImage));
+
+	DestroyImage(&BackupImage);
+	return *Img_dst;
+
+}
+
+/*
+	M O R P H O L O G Y  -  Closing
+*/
+struct Image MorphClose(struct Image *Img_src, struct Image *Img_dst, int ElementSize, int NumberOfIterations)
+{
+	struct Image BackupImage = CreateNewImage(&BackupImage, Img_src->Width, Img_src->Height, 1, COLORSPACE_GRAYSCALE);
+
+	MorphDilate(Img_src, Img_dst, ElementSize, NumberOfIterations);
+	MorphErode(Img_dst, &BackupImage, ElementSize, NumberOfIterations);
+
+	memcpy(Img_dst->rgbpix, BackupImage.rgbpix, Img_dst->Width * Img_dst->Height * sizeof(unsigned char));
+	//memcpy(Img_dst, &BackupImage, sizeof(Img_dst));
+
+	DestroyImage(&BackupImage);
+	return *Img_dst;
+}

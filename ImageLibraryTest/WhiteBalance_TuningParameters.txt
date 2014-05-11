@@ -1,0 +1,7 @@
+1,	//Check For White
+1,	//Attempt gray world algo
+1,	//Use regions, otherwise perform WB on whole image(slower). 5RegionsTotal
+5,	//Numberof Regions - 5 at most. In priority order.
+10,	//CentralPoint X_Region1- in width of Image
+10,	//CentralPoint X_Region1- in width of Image
+15,	//PercentWidthHeight for region 1 (of image)

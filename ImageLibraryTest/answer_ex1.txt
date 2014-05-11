@@ -1,0 +1,19 @@
+ /* Exercise.1 - Inverse image values */
+
+
+struct Image InverseImage0to255(struct Image *Img_src, struct Image *Img_dst)
+{
+	int i, j, z;
+
+	for (i = 0; i < Img_src->Height; i++)
+	{
+		for (j = 0; j < Img_src->Width; j++)
+		{
+			for (z = 0; z < Img_src->Num_channels; z++)
+			{
+				Img_dst->rgbpix[Img_src->Num_channels * (i * Img_src->Width + j) + z] = 255 - Img_src->rgbpix[Img_src->Num_channels * (i * Img_src->Width + j) + z];
+			}
+		}
+	}
+}
+

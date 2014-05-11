@@ -1,0 +1,295 @@
+	R_Global = 0;
+	G_Global = 0;
+	B_Global = 0;
+
+	for (i = 0; i < src->Height / 2; i++)
+	{
+		for (j = 0; j < src->Width / 3; j++)
+		{
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			/* if there is a perfect white pixel in the image */
+			//if (R > 252 && G > 252 && B > 252)
+			//	return;
+
+			R_Global += R;
+			G_Global += G;
+			B_Global += B;
+		}
+	}
+	
+	R_Global /= (float)(src->Height * src->Width / 6.0);
+	G_Global /= (float)(src->Height * src->Width / 6.0);
+	B_Global /= (float)(src->Height * src->Width / 6.0);
+
+	LuminanceAverage = R_Global + G_Global + B_Global;
+	R = R_Global;
+	G = G_Global;
+	B = B_Global;
+	RGB.R = RoundValue_toX_SignificantBits(R, 0);
+	RGB.G = RoundValue_toX_SignificantBits(G, 0);
+	RGB.B = RoundValue_toX_SignificantBits(B, 0);
+
+	XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+	UV = POINT_Convert_XYZ_to_UV(&XYZ);
+
+	WhitePointXYZ_new.u = UV.u;
+	WhitePointXYZ_new.v = UV.v;
+
+	WhitePointXYZ_new.X = XYZ.X;
+	WhitePointXYZ_new.Y = XYZ.Y;
+	WhitePointXYZ_new.Z = XYZ.Z;
+
+	ColorTemperature(&WhitePointXYZ_new, 0);// EXP_HIGH_T);
+
+	printf("Zone1\nu: %f v: %f, K:%d\n\n", UV.u, UV.v, WhitePointXYZ_new.Temperature);
+
+	//////////////ZONE 2
+	R_Global = 0;
+	G_Global = 0;
+	B_Global = 0;
+
+	for (i = src->Height / 2; i < src->Height; i++)
+	{
+		for (j = 0; j < src->Width / 3; j++)
+		{
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			/* if there is a perfect white pixel in the image */
+			//if (R > 252 && G > 252 && B > 252)
+			//	return;
+
+			R_Global += R;
+			G_Global += G;
+			B_Global += B;
+		}
+	}
+
+	R_Global /= (float)(src->Height * src->Width / 6.0);
+	G_Global /= (float)(src->Height * src->Width / 6.0);
+	B_Global /= (float)(src->Height * src->Width / 6.0);
+
+	LuminanceAverage = R_Global + G_Global + B_Global;
+	R = R_Global;
+	G = G_Global;
+	B = B_Global;
+	RGB.R = RoundValue_toX_SignificantBits(R, 0);
+	RGB.G = RoundValue_toX_SignificantBits(G, 0);
+	RGB.B = RoundValue_toX_SignificantBits(B, 0);
+
+	XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+	UV = POINT_Convert_XYZ_to_UV(&XYZ);
+
+	WhitePointXYZ_new.u = UV.u;
+	WhitePointXYZ_new.v = UV.v;
+
+	WhitePointXYZ_new.X = XYZ.X;
+	WhitePointXYZ_new.Y = XYZ.Y;
+	WhitePointXYZ_new.Z = XYZ.Z;
+
+	ColorTemperature(&WhitePointXYZ_new, 1);// EXP_HIGH_T);
+
+	printf("Zone2\nu: %f v: %f, K:%d\n\n", UV.u, UV.v, WhitePointXYZ_new.Temperature);
+
+	// ZONE 3"
+	R_Global = 0;
+	G_Global = 0;
+	B_Global = 0;
+
+	for (i = src->Height / 2; i < src->Height; i++)
+	{
+		for (j = src->Width / 3; j < 2 * src->Width / 3; j++)
+		{
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			/* if there is a perfect white pixel in the image */
+			//if (R > 252 && G > 252 && B > 252)
+			//	return;
+
+			R_Global += R;
+			G_Global += G;
+			B_Global += B;
+		}
+	}
+
+	R_Global /= (float)(src->Height * src->Width / 6.0);
+	G_Global /= (float)(src->Height * src->Width / 6.0);
+	B_Global /= (float)(src->Height * src->Width / 6.0);
+
+	LuminanceAverage = R_Global + G_Global + B_Global;
+	R = R_Global;
+	G = G_Global;
+	B = B_Global;
+	RGB.R = RoundValue_toX_SignificantBits(R, 0);
+	RGB.G = RoundValue_toX_SignificantBits(G, 0);
+	RGB.B = RoundValue_toX_SignificantBits(B, 0);
+
+	XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+	UV = POINT_Convert_XYZ_to_UV(&XYZ);
+
+	WhitePointXYZ_new.u = UV.u;
+	WhitePointXYZ_new.v = UV.v;
+
+	WhitePointXYZ_new.X = XYZ.X;
+	WhitePointXYZ_new.Y = XYZ.Y;
+	WhitePointXYZ_new.Z = XYZ.Z;
+
+	ColorTemperature(&WhitePointXYZ_new, 1);// EXP_HIGH_T);
+
+	printf("Zone3\nu: %f v: %f, K:%d\n\n", UV.u, UV.v, WhitePointXYZ_new.Temperature);
+
+	///ZONE 4
+	R_Global = 0;
+	G_Global = 0;
+	B_Global = 0;
+
+	for (i = 0; i < src->Height / 2; i++)
+	{
+		for (j = src->Width / 3; j < 2 * src->Width / 3; j++)
+		{
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			/* if there is a perfect white pixel in the image */
+			//if (R > 252 && G > 252 && B > 252)
+			//	return;
+
+			R_Global += R;
+			G_Global += G;
+			B_Global += B;
+		}
+	}
+
+	R_Global /= (float)(src->Height * src->Width / 6.0);
+	G_Global /= (float)(src->Height * src->Width / 6.0);
+	B_Global /= (float)(src->Height * src->Width / 6.0);
+
+	LuminanceAverage = R_Global + G_Global + B_Global;
+	R = R_Global;
+	G = G_Global;
+	B = B_Global;
+	RGB.R = RoundValue_toX_SignificantBits(R, 0);
+	RGB.G = RoundValue_toX_SignificantBits(G, 0);
+	RGB.B = RoundValue_toX_SignificantBits(B, 0);
+
+	XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+	UV = POINT_Convert_XYZ_to_UV(&XYZ);
+
+	WhitePointXYZ_new.u = UV.u;
+	WhitePointXYZ_new.v = UV.v;
+
+	WhitePointXYZ_new.X = XYZ.X;
+	WhitePointXYZ_new.Y = XYZ.Y;
+	WhitePointXYZ_new.Z = XYZ.Z;
+
+	ColorTemperature(&WhitePointXYZ_new, 1);// EXP_HIGH_T);
+
+	printf("Zone4\nu: %f v: %f, K:%d\n\n", UV.u, UV.v, WhitePointXYZ_new.Temperature);
+
+	///ZONE 5
+
+	R_Global = 0;
+	G_Global = 0;
+	B_Global = 0;
+
+	for (i = src->Height / 2; i < src->Height; i++)
+	{
+		for (j = 2 * src->Width / 3; j < 3 * src->Width / 3; j++)
+		{
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			/* if there is a perfect white pixel in the image */
+			//if (R > 252 && G > 252 && B > 252)
+			//	return;
+
+			R_Global += R;
+			G_Global += G;
+			B_Global += B;
+		}
+	}
+
+	R_Global /= (float)(src->Height * src->Width / 6.0);
+	G_Global /= (float)(src->Height * src->Width / 6.0);
+	B_Global /= (float)(src->Height * src->Width / 6.0);
+
+	LuminanceAverage = R_Global + G_Global + B_Global;
+	R = R_Global;
+	G = G_Global;
+	B = B_Global;
+	RGB.R = RoundValue_toX_SignificantBits(R, 0);
+	RGB.G = RoundValue_toX_SignificantBits(G, 0);
+	RGB.B = RoundValue_toX_SignificantBits(B, 0);
+
+	XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+	UV = POINT_Convert_XYZ_to_UV(&XYZ);
+
+	WhitePointXYZ_new.u = UV.u;
+	WhitePointXYZ_new.v = UV.v;
+
+	WhitePointXYZ_new.X = XYZ.X;
+	WhitePointXYZ_new.Y = XYZ.Y;
+	WhitePointXYZ_new.Z = XYZ.Z;
+
+	ColorTemperature(&WhitePointXYZ_new, 1);// EXP_HIGH_T);
+
+	printf("Zone5\nu: %f v: %f, K:%d\n\n", UV.u, UV.v, WhitePointXYZ_new.Temperature);
+
+	///ZONE 6
+
+	R_Global = 0;
+	G_Global = 0;
+	B_Global = 0;
+
+	for (i = 0; i < src->Height / 2; i++)
+	{
+		for (j = 2 * src->Width / 3; j < 3 * src->Width / 3; j++)
+		{
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			/* if there is a perfect white pixel in the image */
+			//if (R > 252 && G > 252 && B > 252)
+			//	return;
+
+			R_Global += R;
+			G_Global += G;
+			B_Global += B;
+		}
+	}
+
+	R_Global /= (float)(src->Height * src->Width / 6.0);
+	G_Global /= (float)(src->Height * src->Width / 6.0);
+	B_Global /= (float)(src->Height * src->Width / 6.0);
+
+	LuminanceAverage = R_Global + G_Global + B_Global;
+	R = R_Global;
+	G = G_Global;
+	B = B_Global;
+	RGB.R = RoundValue_toX_SignificantBits(R, 0);
+	RGB.G = RoundValue_toX_SignificantBits(G, 0);
+	RGB.B = RoundValue_toX_SignificantBits(B, 0);
+
+	XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+	UV = POINT_Convert_XYZ_to_UV(&XYZ);
+
+	WhitePointXYZ_new.u = UV.u;
+	WhitePointXYZ_new.v = UV.v;
+
+	WhitePointXYZ_new.X = XYZ.X;
+	WhitePointXYZ_new.Y = XYZ.Y;
+	WhitePointXYZ_new.Z = XYZ.Z;
+
+	ColorTemperature(&WhitePointXYZ_new, 1);// EXP_HIGH_T);
+
+	printf("Zone6\nu: %f v: %f, K:%d\n\n", UV.u, UV.v, WhitePointXYZ_new.Temperature);
+	

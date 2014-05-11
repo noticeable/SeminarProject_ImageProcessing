@@ -1,0 +1,47 @@
+/*exercise 4 - Flip images */
+
+/*
+	M I R R O R  image - horizontal
+*/
+struct Image MirrorImageHorizontal(struct Image *Img_src, struct Image *Img_dst)
+{
+	int i, j, l, k;
+
+	for (i = Img_dst->Height-1; i >= 0; i--)
+	{
+		for (j = 0; j < Img_dst->Width; j++)
+		{
+			for (l = 0; l < Img_dst->Num_channels; l++)
+			{
+				Img_dst->rgbpix[((Img_dst->Height - 1 - i) * Img_src->Num_channels * Img_src->Width) + (Img_src->Num_channels * j) + l] = Img_src->rgbpix[(i * Img_src->Num_channels * Img_src->Width) + (Img_src->Num_channels * j) + l];
+			}
+		}
+	}
+
+	return *Img_dst;
+}
+
+
+/*
+	M I R R O R  image - vertical
+*/
+struct Image MirrorImageVertical(struct Image *Img_src, struct Image *Img_dst)
+{
+	int i, j, l;
+
+	if (Img_src->Num_channels != Img_dst->Num_channels)
+		return *Img_dst;
+
+	for (i = 0; i < Img_dst->Height; i++)
+	{
+		for (j = 0; j < Img_dst->Width; j++)
+		{
+			for (l = 0; l < Img_dst->Num_channels; l++)
+			{
+				Img_dst->rgbpix[(i * Img_src->Num_channels * Img_src->Width) + (Img_src->Num_channels * (Img_dst->Width - 1 - j)) + l] = Img_src->rgbpix[(i * Img_src->Num_channels * Img_src->Width) + (Img_src->Num_channels * j) + l];
+			}
+		}
+	}
+
+	return *Img_dst;
+}

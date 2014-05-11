@@ -1,0 +1,616 @@
+/*Exercise 9 - WHITE BALANCE*/
+
+
+/* 
+	Correct     W H I T E  B A L A N C E  - RGB
+*/
+struct Image WhiteBalanceCorrectionRGB(struct Image *Img_src, struct Image *Img_dst, int Algotype)
+{
+	int i, j;
+
+	int MaxR = 0, MaxG = 0, MaxB = 0;
+	float GtoR_Ratio = 1;
+	float GtoB_Ratio = 1;
+	long SumG = 0;
+	long SumR = 0;
+	long SumB = 0;
+	float Gto255_Ratio = 1;
+	int check3Values = 0;
+
+	if ((Img_src->Num_channels != Img_dst->Num_channels) || (Img_src->Num_channels != 3))
+		return *Img_dst;
+
+	/* Only RGB is supported for WhiteBalance algos*/
+	if (Img_src->ColorSpace != 2) 
+		return *Img_dst;
+
+	if (Algotype == 1)
+	{
+		//Green world - automatic white detection
+		for (i = 0; i < Img_src->Height; i++)
+		{
+			for (j = 0; j < Img_src->Width; j++)
+			{
+				check3Values = 0;
+				if (Img_src->rgbpix[3 * (i*Img_src->Width + j) ] > MaxR) { MaxR = Img_src->rgbpix[3 * (i*Img_src->Width + j)]; check3Values++; }
+				if (Img_src->rgbpix[3 * (i*Img_src->Width + j)  + 1] > MaxG) { MaxG = Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1]; check3Values++;}
+				if (Img_src->rgbpix[3 * (i*Img_src->Width + j)  + 2] > MaxB) { MaxB = Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2]; check3Values++; }
+				
+				if (check3Values == 3)
+				{
+					//Calculate ratios
+					GtoR_Ratio = (float)Img_src->rgbpix[3 * (i*Img_src->Width + j) +1] / Img_src->rgbpix[3 * (i*Img_src->Width + j) ];
+					GtoB_Ratio = (float)Img_src->rgbpix[3 * (i*Img_src->Width + j) +1] / Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2];
+				}
+			}
+		}
+		/*Calculate new values based on GtoR amd GtoB ratios*/
+		for (i = 0; i < Img_src->Height; i++)
+		{
+			for (j = 0; j < Img_src->Width; j++)
+			{
+				if (GtoR_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j)] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j) ] = GtoR_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j)];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j)] = 255;
+				if (GtoB_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 2] = GtoB_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 2] = 255;
+				
+				Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 1] = Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1];
+			}
+		}
+	}
+	else if (Algotype == 2)
+	{
+		for (i = 0; i < Img_src->Height; i++)
+		{
+			for (j = 0; j < Img_src->Width; j++)
+			{
+				if (Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1] > MaxG) 
+				{ 
+					MaxG = Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1];
+					GtoR_Ratio = (float)MaxG / Img_src->rgbpix[3 * (i*Img_src->Width + j)];
+					GtoB_Ratio = (float)MaxG / Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2];
+				}
+			}
+		}
+		/*Calculate new values based on GtoR and GtoB ratios*/
+		for (i = 0; i < Img_src->Height; i++)
+		{
+			for (j = 0; j < Img_src->Width; j++)
+			{
+				if (GtoR_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j)] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j)] = GtoR_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j)];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j)] = 255;
+				if (GtoB_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 2] = GtoB_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 2] = 255;
+
+				Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 1] = Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1];
+			}
+		}
+
+	}
+	else if (Algotype == 3)
+	{
+		//Green world - automatic white detection
+		for (i = 0; i < Img_src->Height; i++)
+		{
+			for (j = 0; j < Img_src->Width; j++)
+			{
+				check3Values = 0;
+				if (Img_src->rgbpix[3 * (i*Img_src->Width + j)] > MaxR) { MaxR = Img_src->rgbpix[3 * (i*Img_src->Width + j)]; check3Values++; }
+				if (Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1] > MaxG) { MaxG = Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1]; check3Values++; }
+				if (Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2] > MaxB) { MaxB = Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2]; check3Values++; }
+
+				if (check3Values == 3)
+				{
+					//Calculate ratios
+					Gto255_Ratio = 255 / MaxG;
+					GtoR_Ratio = (float)(Gto255_Ratio *(MaxG / MaxR));
+					GtoB_Ratio = (float)(Gto255_Ratio *(MaxG / MaxB));
+				}
+			}
+		}
+		/*Calculate new values based on GtoR amd GtoB ratios*/
+		for (i = 0; i < Img_src->Height; i++)
+		{
+			for (j = 0; j < Img_src->Width; j++)
+			{
+				if (GtoR_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j)] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j)] = GtoR_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j)];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j)] = 255;
+				if (GtoB_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 2] = GtoB_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 2] = 255;
+				if (Gto255_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 1] = Gto255_Ratio* Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 1] = 255;
+			}
+		}
+	}
+	else if (Algotype == 4)
+	{
+		//Green world - automatic white detection
+		for (i = 0; i < Img_src->Height; i++)
+		{
+			for (j = 0; j < Img_src->Width; j++)
+			{
+				SumR += Img_src->rgbpix[3 * (i*Img_src->Width + j)    ];
+				SumG += Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1];
+				SumB += Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2];
+			}
+		}
+		GtoR_Ratio =   (float)SumG / SumR;
+		GtoB_Ratio =   (float)SumG / SumB;
+		Gto255_Ratio = (float)SumG / (255 * Img_src->Height * Img_src->Width);
+	/*	if (GtoB_Ratio < 0.8 || GtoR_Ratio < 0.8)
+		{
+			GtoR_Ratio = GtoR_Ratio * ;
+			GtoB_Ratio = (float)SumG / SumB;
+		}*/
+		/*Calculate new values based on GtoR amd GtoB ratios*/
+		for (i = 0; i < Img_src->Height; i++)
+		{
+			for (j = 0; j < Img_src->Width; j++)
+			{
+				if (GtoR_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) ] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j)] = GtoR_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j)];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j)] = 255;
+				if (GtoB_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2] <= 255)
+					Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 2] = GtoB_Ratio * Img_src->rgbpix[3 * (i*Img_src->Width + j) + 2];
+				else Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 2] = 255;
+				
+				Img_dst->rgbpix[3 * (i*Img_src->Width + j) + 1] = Img_src->rgbpix[3 * (i*Img_src->Width + j) + 1];
+			}
+		}
+	}
+	else return *Img_src;
+
+	return *Img_dst;
+}
+
+/* ................................................................................................. */
+
+float xyz_to_lab(float c)
+{
+	return c > 216.0 / 24389.0 ? pow(c, 1.0 / 3.0) : c * (841.0 / 108.0) + (4.0 / 29.0);
+}
+
+void WhiteBalanceGREENY(struct Image *src, struct Image *dst, struct WhitePoint WhitePoint_XYZ)
+{
+	float LuminanceAverage = 0;
+	struct ColorPoint_UV UV;
+	struct WhitePoint WhitePointXYZ_new;
+	struct ColorPoint_RGB RGB;
+	struct ColorPoint_XYZ XYZ;
+	struct ColorPoint_XYZ XYZ_D;
+	float RatioX, RatioY, RatioZ;
+	float e = 0.008856;
+	float u,v;
+	float k = 903.3;
+	float F_x, F_z, F_y;
+	
+	//XYZ
+	//float Matrix_M_a[9] = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+	//float matrix_M_min1[9] = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
+	//BRADFORD
+	//float Matrix_M_a[9] = { 0.8951000, 0.2664000, -0.1614000, -0.7502000, 1.7135000, 0.0367000, 0.0389000, -0.0685000, 1.0296000 };
+	//float matrix_M_min1[9] = { 0.9869929, -0.1470543, 0.1599627, 0.4323053, 0.5183603, 0.0492912, -0.0085287, 0.0400428, 0.9684867 };
+	//CAT97s
+	//float Matrix_M_a[9] = { 0.08562, 0.3372, -0.1934, -0.836, 1.8327, 0.0033, 0.0357, -0.0469, 1.0112 };
+	//float matrix_M_min1[9] = { 0.9869929, -0.1470543, 0.1599627, 0.4323053, 0.5183603, 0.0492912, -0.0085287, 0.0400428, 0.9684867 };
+	//CAT02s
+	float Matrix_M_a[9] = { 0.7328, 0.4296, -0.1624, -0.7036, 1.6975, 0.0061, 0.0030, 0.0136, 0.9834 };
+	float matrix_M_min1[9] = { 0.9869929, -0.1470543, 0.1599627, 0.4323053, 0.5183603, 0.0492912, -0.0085287, 0.0400428, 0.9684867 };
+	//VON Kries
+	//float Matrix_M_a[9] = { 0.40024, 0.7076, -0.08081, -0.2263, 1.16532, 0.0457, 0, 0, 0.91822 };
+	//float matrix_M_min1[9] = { 1.8599364, -1.1293816, 0.2198974, 0.3611914, 0.6388125, -0.0000064, 0, 0, 1.08906 };
+	
+	float S_params[3];
+	float D_params[3];
+	float S_D_ParamsMatrix[9];
+	float MatrixMultiplication_1[9];
+	float matrix_M_final[9];
+	float maxv;
+	float P, Number;
+	int i, j, z;
+	long double R_Global = 0;
+	long double G_Global = 0;
+	long double B_Global = 0;
+	float MAX_VALUE = 0; 
+	int Razlika_R, Razlika_G, Razlika_B;
+	int tmpKelvin = 0;
+
+	float R, G, B, dult;
+	float X, Y, Z, L, a, b, bbb, intensity;
+
+
+
+	// FULL
+
+	R_Global = 0;
+	G_Global = 0;
+	B_Global = 0;
+
+	for (i = 0; i < src->Height; i++)
+	{
+		for (j = 0; j < src->Width; j++)
+		{
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			/* if there is a perfect white pixel in the image */
+			//if (R > 252 && G > 252 && B > 252)
+			//	return;
+
+			R_Global += R;
+			G_Global += G;
+			B_Global += B;
+		}
+	}
+
+	R_Global /= (float)(src->Height * src->Width);
+	G_Global /= (float)(src->Height * src->Width);
+	B_Global /= (float)(src->Height * src->Width);
+
+	LuminanceAverage = R_Global + G_Global + B_Global;
+	R = R_Global;
+	G = G_Global;
+	B = B_Global;
+	MAX_VALUE = MAX(R, MAX(G, B));
+
+	if (MAX_VALUE != G)
+	{
+		//WhitebalanceCorrectionBLUEorRED(src, dst, WhitePoint_XYZ);
+		//return;
+	}
+
+	Razlika_B = 255 - MAX_VALUE;
+//	if (R == MAX_VALUE)
+//	{
+	//R += Razlika_B;
+	//G += Razlika_B;
+	//B += Razlika_B;
+/*	}
+	else if (G == MAX_VALUE)
+	{
+		R += Razlika;
+		B += Razlika;
+	}
+	else if (B == MAX_VALUE)
+	{
+		G += Razlika;
+		R += Razlika;
+	}
+*/
+	RGB.R = RoundValue_toX_SignificantBits(R, 0);
+	RGB.G = RoundValue_toX_SignificantBits(G, 0);
+	RGB.B = RoundValue_toX_SignificantBits(B, 0);
+
+	XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+	UV = POINT_Convert_XYZ_to_UV(&XYZ);
+
+	WhitePointXYZ_new.u = UV.u;
+	WhitePointXYZ_new.v = UV.v;
+
+	WhitePointXYZ_new.X = XYZ.X;
+	WhitePointXYZ_new.Y = XYZ.Y;
+	WhitePointXYZ_new.Z = XYZ.Z;
+
+	ColorTemperature(&WhitePointXYZ_new, 0);// EXP_HIGH_T);
+
+	//printf("Zone_ALL\nu: %f v: %f, K:%d\n\n", UV.u, UV.v, WhitePointXYZ_new.Temperature);
+
+
+	tmpKelvin = WhitePoint_XYZ.Temperature / 100;
+
+	if (tmpKelvin <= 66){
+
+		R = 255;
+
+		G = tmpKelvin;
+		G = 99.4708025861 * log(G) - 161.1195681661;
+
+
+		if (tmpKelvin <= 19)
+		{
+			B = 0;
+		}
+		else {
+
+			B = tmpKelvin - 10;
+			B = 138.5177312231 * log(B) - 305.0447927307;
+
+		}
+
+	}
+	else {
+
+		R = tmpKelvin - 60;
+		R = 329.698727446 * pow(R, -0.1332047592);
+
+		G = tmpKelvin - 60;
+		G = 288.1221695283 * pow(G, -0.0755148492);
+
+		B = 255;
+
+	}
+
+	tmpKelvin = WhitePointXYZ_new.Temperature / 100;
+
+	if (tmpKelvin <= 66){
+
+		Razlika_R = 255;
+
+		Razlika_G = tmpKelvin;
+		Razlika_G = 99.4708025861 * log(Razlika_G) - 161.1195681661;
+
+
+		if (tmpKelvin <= 19)
+		{
+			Razlika_B = 0;
+		}
+		else {
+
+			Razlika_B = tmpKelvin - 10;
+			Razlika_B = 138.5177312231 * log(Razlika_B) - 305.0447927307;
+
+		}
+
+	}
+	else {
+
+		Razlika_R = tmpKelvin - 60;
+		Razlika_R = 329.698727446 * pow(Razlika_R, -0.1332047592);
+
+		Razlika_G = tmpKelvin - 60;
+		Razlika_G = 288.1221695283 * pow(Razlika_G, -0.0755148492);
+
+		Razlika_B = 255;
+	}
+
+	//Razlika_R = R - Razlika_R;
+	//Razlika_G = G - Razlika_G;
+	//Razlika_B = B - Razlika_B;
+	/*Luminance between 0 and 1*/
+ 	LuminanceAverage /=(3.0 * 255);
+	/*change Matrix_M_a to match the luminance*/
+	for(i = 0; i < 9; i++)
+	{
+		//if(i == 2)Matrix_M_a[i] *= (0 *LuminanceAverage); // cherveno
+		//if(i == 8)Matrix_M_a[i] *= (0 *LuminanceAverage); // Zeleno
+		//else
+			Matrix_M_a[i] *= (1.4 * LuminanceAverage);
+			//matrix_M_min1[i] *= (0.4 * LuminanceAverage);
+		//Matrix_M_a[i] += LuminanceAverage - 0.8; // Epic fail
+		//Matrix_M_a[i] += LuminanceAverage - 0.9;
+		//if (i == 1)  Matrix_M_a[i] *= (0.1 * LuminanceAverage);
+		//else Matrix_M_a[i] *= (0.7 * LuminanceAverage);
+	}
+
+	WhitePointXYZ_new.X /= 100.0;
+	WhitePointXYZ_new.Y /= 100.0;
+	WhitePointXYZ_new.Z /= 100.0;
+
+	//#pragma omp parallel for private(j, col, R, G, B, intensity,L,a,bbb,X,Y,Z)
+	for (i = 0; i<src->Height; i++)
+	{
+		for (j = 0; j<src->Width; j++)
+		{
+			maxv = 255;
+
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			RGB.R = R;
+			RGB.G = G;
+			RGB.B = B;
+			// Convert RGB point to XYZ
+			XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+			XYZ.X /= 100.0;
+			XYZ.Y /= 100.0;
+			XYZ.Z /= 100.0;
+			
+			/*
+			| X_d |           | X_s |
+			| Y_d |   = |M| * | Y_s |
+			| Z_s |           | Z_s |
+			http://www.brucelindbloom.com/index.html?Eqn_RGB_XYZ_Matrix.html
+			*/
+			S_params[0] = WhitePointXYZ_new.X * Matrix_M_a[0] + WhitePointXYZ_new.Y * Matrix_M_a[1] + WhitePointXYZ_new.Z * Matrix_M_a[2];
+			S_params[1] = WhitePointXYZ_new.X * Matrix_M_a[3] + WhitePointXYZ_new.Y * Matrix_M_a[4] + WhitePointXYZ_new.Z * Matrix_M_a[5];
+			S_params[2] = WhitePointXYZ_new.X * Matrix_M_a[6] + WhitePointXYZ_new.Y * Matrix_M_a[7] + WhitePointXYZ_new.Z * Matrix_M_a[8];
+
+			D_params[0] = WhitePoint_XYZ.X * Matrix_M_a[0] + WhitePoint_XYZ.Y * Matrix_M_a[1] + WhitePoint_XYZ.Z * Matrix_M_a[2];
+			D_params[1] = WhitePoint_XYZ.X * Matrix_M_a[3] + WhitePoint_XYZ.Y * Matrix_M_a[4] + WhitePoint_XYZ.Z * Matrix_M_a[5];
+			D_params[2] = WhitePoint_XYZ.X * Matrix_M_a[6] + WhitePoint_XYZ.Y * Matrix_M_a[7] + WhitePoint_XYZ.Z * Matrix_M_a[8];
+
+			/* Compute M_min1 matrix * S/D */
+			S_D_ParamsMatrix[0] = D_params[0] / S_params[0];
+			S_D_ParamsMatrix[1] = 0;
+			S_D_ParamsMatrix[2] = 0;
+			S_D_ParamsMatrix[3] = 0;
+			S_D_ParamsMatrix[4] = D_params[1] / S_params[1];
+			S_D_ParamsMatrix[5] = 0;
+			S_D_ParamsMatrix[6] = 0;
+			S_D_ParamsMatrix[7] = 0;
+			S_D_ParamsMatrix[8] = D_params[2] / S_params[2];
+
+			MatrixMultiplication_1[0] = matrix_M_min1[0] * S_D_ParamsMatrix[0];
+			MatrixMultiplication_1[1] = matrix_M_min1[1] * S_D_ParamsMatrix[4];
+			MatrixMultiplication_1[2] = matrix_M_min1[2] * S_D_ParamsMatrix[8];
+			MatrixMultiplication_1[3] = matrix_M_min1[3] * S_D_ParamsMatrix[0];
+			MatrixMultiplication_1[4] = matrix_M_min1[4] * S_D_ParamsMatrix[4];
+			MatrixMultiplication_1[5] = matrix_M_min1[5] * S_D_ParamsMatrix[8];
+			MatrixMultiplication_1[6] = matrix_M_min1[6] * S_D_ParamsMatrix[0];
+			MatrixMultiplication_1[7] = matrix_M_min1[7] * S_D_ParamsMatrix[4];
+			MatrixMultiplication_1[8] = matrix_M_min1[8] * S_D_ParamsMatrix[8];
+			
+			/* Compute MatrixMultiplication_1 * matrix_M */
+
+			matrix_M_final[0] = MatrixMultiplication_1[0] * Matrix_M_a[0] + MatrixMultiplication_1[1] * Matrix_M_a[3] + MatrixMultiplication_1[2] * Matrix_M_a[6];
+			matrix_M_final[1] = MatrixMultiplication_1[0] * Matrix_M_a[1] + MatrixMultiplication_1[1] * Matrix_M_a[4] + MatrixMultiplication_1[2] * Matrix_M_a[7];
+			matrix_M_final[2] = MatrixMultiplication_1[0] * Matrix_M_a[2] + MatrixMultiplication_1[1] * Matrix_M_a[5] + MatrixMultiplication_1[2] * Matrix_M_a[8];
+			matrix_M_final[3] = MatrixMultiplication_1[3] * Matrix_M_a[0] + MatrixMultiplication_1[4] * Matrix_M_a[3] + MatrixMultiplication_1[5] * Matrix_M_a[6];
+			matrix_M_final[4] = MatrixMultiplication_1[3] * Matrix_M_a[1] + MatrixMultiplication_1[4] * Matrix_M_a[4] + MatrixMultiplication_1[5] * Matrix_M_a[7];
+			matrix_M_final[5] = MatrixMultiplication_1[3] * Matrix_M_a[2] + MatrixMultiplication_1[4] * Matrix_M_a[5] + MatrixMultiplication_1[5] * Matrix_M_a[8];
+			matrix_M_final[6] = MatrixMultiplication_1[6] * Matrix_M_a[0] + MatrixMultiplication_1[7] * Matrix_M_a[3] + MatrixMultiplication_1[8] * Matrix_M_a[6];
+			matrix_M_final[7] = MatrixMultiplication_1[6] * Matrix_M_a[1] + MatrixMultiplication_1[7] * Matrix_M_a[4] + MatrixMultiplication_1[8] * Matrix_M_a[7];
+			matrix_M_final[8] = MatrixMultiplication_1[6] * Matrix_M_a[2] + MatrixMultiplication_1[7] * Matrix_M_a[5] + MatrixMultiplication_1[8] * Matrix_M_a[8];
+
+			XYZ_D.X = matrix_M_final[0] * XYZ.X + matrix_M_final[1] * XYZ.Y + matrix_M_final[2] * XYZ.Z;
+			XYZ_D.Y = matrix_M_final[3] * XYZ.X + matrix_M_final[4] * XYZ.Y + matrix_M_final[5] * XYZ.Z;
+			XYZ_D.Z = matrix_M_final[6] * XYZ.X + matrix_M_final[7] * XYZ.Y + matrix_M_final[8] * XYZ.Z;
+			//RGB: 150,55,7
+			//XYZ: 0.14, 0.09, 0.01
+			RGB = POINT_Convert_XYZ_to_RGB(&XYZ_D);
+
+			dst->rgbpix[(i*dst->Width + j) * 3 + 0] = RGB.R;
+			dst->rgbpix[(i*dst->Width + j) * 3 + 1] = RGB.G;
+			dst->rgbpix[(i*dst->Width + j) * 3 + 2] = RGB.B;
+		}
+	}
+	//WhitebalanceCorrectionBLUEorRED(src, dst, WhitePoint_XYZ);
+}
+
+/* ................................................................................................. */
+
+
+
+/* .............................................................................................. */
+/*
+	W H I T E   B A L A N C E  algorithm using RGB and Temperature of src and dest
+*/
+void WhitebalanceCorrectionBLUEorRED(struct Image *src, struct Image *dst, struct WhitePoint WhitePoint_lab)
+{
+	float LuminanceAverage = 0;
+	struct ColorPoint_UV UV;
+	struct WhitePoint WhitePointXYZ_new;
+	struct ColorPoint_RGB RGB;
+	struct ColorPoint_XYZ XYZ;
+	struct ColorPoint_XYZ XYZ_D;
+
+	float maxv;
+	float P, Number;
+	int i, j, z;
+	long double R_Global = 0;
+	long double G_Global = 0;
+	long double B_Global = 0;
+	float MAX_VALUE = 0;
+	int Razlika_R, Razlika_G, Razlika_B;
+	int tmpKelvin = 0;
+
+	float R, G, B, dult;
+	float X, Y, Z, L, a, b, bbb, intensity;
+
+	R_Global = 0;
+	G_Global = 0;
+	B_Global = 0;
+
+	for (i = 0; i < src->Height; i++)
+	{
+		for (j = 0; j < src->Width; j++)
+		{
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			R_Global += R;
+			G_Global += G;
+			B_Global += B;
+		}
+	}
+
+	R_Global /= (float)(src->Height * src->Width);
+	G_Global /= (float)(src->Height * src->Width);
+	B_Global /= (float)(src->Height * src->Width);
+
+	if (MAX(R_Global, MAX(G_Global, B_Global)) == G_Global)
+	{
+	//	memcpy(src->rgbpix, dst->rgbpix, 3 * src->Height * src->Width * sizeof(unsigned char));
+	//	return;
+	}
+
+	RGB.R = RoundValue_toX_SignificantBits(R_Global, 0);
+	RGB.G = RoundValue_toX_SignificantBits(G_Global, 0);
+	RGB.B = RoundValue_toX_SignificantBits(B_Global, 0);
+
+	XYZ = POINT_Convert_RGB_to_XYZ(&RGB);
+	UV = POINT_Convert_XYZ_to_UV(&XYZ);
+
+	WhitePointXYZ_new.u = UV.u;
+	WhitePointXYZ_new.v = UV.v;
+
+	WhitePointXYZ_new.X = XYZ.X;
+	WhitePointXYZ_new.Y = XYZ.Y;
+	WhitePointXYZ_new.Z = XYZ.Z;
+
+	ColorTemperature(&WhitePointXYZ_new, 0);// EXP_HIGH_T);
+
+	tmpKelvin = WhitePointXYZ_new.Temperature / 100;
+
+	if (tmpKelvin <= 66){
+
+		Razlika_R = 255;
+
+		Razlika_G = tmpKelvin;
+		Razlika_G = 99.4708025861 * log(Razlika_G) - 161.1195681661;
+
+
+		if (tmpKelvin <= 19)
+		{
+			Razlika_B = 0;
+		}
+		else {
+
+			Razlika_B = tmpKelvin - 10;
+			Razlika_B = 138.5177312231 * log(Razlika_B) - 305.0447927307;
+
+		}
+
+	}
+	else 
+	{
+
+		Razlika_R = tmpKelvin - 60;
+		Razlika_R = 329.698727446 * pow(Razlika_R, -0.1332047592);
+
+		Razlika_G = tmpKelvin - 60;
+		Razlika_G = 288.1221695283 * pow(Razlika_G, -0.0755148492);
+
+		Razlika_B = 255;
+
+	}
+	//printf("Zone_ALL\nu: %f v: %f, K:%d\n\n", UV.u, UV.v, WhitePointXYZ_new.Temperature);
+
+
+	for (i = 0; i < src->Height; i++)
+	{
+		for (j = 0; j < src->Width; j++)
+		{
+			maxv = 255;
+
+			R = (float)src->rgbpix[(i*dst->Width + j) * 3 + 0];
+			G = (float)src->rgbpix[(i*dst->Width + j) * 3 + 1];
+			B = (float)src->rgbpix[(i*dst->Width + j) * 3 + 2];
+
+			RGB.R = RoundValue_toX_SignificantBits(R * 255 / (float)Razlika_R, 0);
+			RGB.G = RoundValue_toX_SignificantBits(G * 255 / (float)Razlika_G, 0);
+			RGB.B = RoundValue_toX_SignificantBits(B * 255 / (float)Razlika_B, 0);
+			
+			if (RGB.R > 255) RGB.R = 255;
+			if (RGB.G > 255) RGB.G = 255;
+			if (RGB.B > 255) RGB.B = 255;
+			if (RGB.R < 0) RGB.R = 0;
+			if (RGB.G < 0) RGB.G = 0;
+			if (RGB.B < 0) RGB.B = 0;
+
+			dst->rgbpix[(i*dst->Width + j) * 3 + 0] = RGB.R;
+			dst->rgbpix[(i*dst->Width + j) * 3 + 1] = RGB.G;
+			dst->rgbpix[(i*dst->Width + j) * 3 + 2] = RGB.B;
+		}
+	}
+}

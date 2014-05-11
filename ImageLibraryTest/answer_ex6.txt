@@ -1,0 +1,52 @@
+/*exercise 6 - Crop Image */
+
+/*
+	C R O P  image - around given point and given new dimensions
+*/
+struct Image CropImage(struct Image *Img_src, struct Image *Img_dst, struct point_xy CentralPoint, int NewWidth, int NewHeight)
+{
+	int i, j, l, k, z;
+
+	if (Img_src->Num_channels != Img_dst->Num_channels)
+		return *Img_dst;
+
+	if (NewWidth >= Img_src->Width || NewHeight >= Img_src->Height)
+		return *Img_dst;
+
+	/* Modify Img_dst */
+	Img_dst->Width = NewWidth;
+	Img_dst->Height = NewHeight;
+	Img_dst->rgbpix = (unsigned char *)realloc(Img_dst->rgbpix, Img_dst->Width * Img_dst->Height * Img_dst->Num_channels * sizeof(unsigned char));
+
+	/* Modify Central point - shift x and y*/
+	if (CentralPoint.X > Img_src->Width - 1) CentralPoint.X = Img_src->Width - 1;
+	if (CentralPoint.Y > Img_src->Height - 1) CentralPoint.X = Img_src->Height - 1;
+	if (CentralPoint.X < 0) CentralPoint.X = 0;
+	if (CentralPoint.Y < 0) CentralPoint.X = 0;
+
+	/* for x - too right*/
+	if (Img_src->Width < (NewWidth / 2) + CentralPoint.X) CentralPoint.X = Img_src->Width - (NewWidth / 2) - 1;
+	/* for y - too down */
+	if (Img_src->Height < (NewHeight / 2) + CentralPoint.Y) CentralPoint.Y = Img_src->Height - (NewHeight / 2) - 1;
+	/* for x - too left*/
+	if (CentralPoint.X - (NewWidth / 2 ) < 0) CentralPoint.X = (NewWidth / 2) + 1;
+	/* for y - too up*/
+	if (CentralPoint.Y - (NewHeight / 2) < 0) CentralPoint.Y = (NewHeight / 2) + 1;
+
+	k = CentralPoint.Y - (NewHeight / 2);
+	for (i = 0; i < Img_dst->Height; i++)
+	{
+		k++;
+		z = CentralPoint.X - (NewWidth / 2);
+		for (j = 0; j < Img_dst->Width; j++)
+		{
+			z++;
+			for (l = 0; l < Img_dst->Num_channels; l++)
+			{
+				Img_dst->rgbpix[(i * Img_dst->Num_channels * Img_dst->Width) + (Img_dst->Num_channels * j) + l] = Img_src->rgbpix[(k * Img_src->Num_channels * Img_src->Width) + (Img_src->Num_channels * z) + l];
+			}
+		}
+	}
+
+	return *Img_dst;
+}

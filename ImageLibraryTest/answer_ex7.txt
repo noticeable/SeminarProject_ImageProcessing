@@ -1,0 +1,58 @@
+/*Exercise 7 -BLUR - gaussian*/
+
+/*
+	B L U R  image function - Gaussian
+*/
+struct Image BlurImageGussian(struct Image *Img_src, struct Image *Img_dst, int BlurPixelRadius, float NeighborCoefficient)
+{
+	int i, j, l, z, t;
+	int Sybiraemo = 0;
+	float Chislo = 0;
+	float Chislo2 = 0;
+	if (BlurPixelRadius < 5) BlurPixelRadius = 5;
+	if (NeighborCoefficient > 100) NeighborCoefficient /= 100;
+	if (NeighborCoefficient < 0) NeighborCoefficient *= -1;
+
+	for (i = 0; i < Img_dst->Height; i++)
+	{
+		for (j = 0; j < Img_dst->Width; j++)
+		{
+			if (i < BlurPixelRadius / 2 || j < BlurPixelRadius / 2 || j >= Img_dst->Width - BlurPixelRadius / 2 || i >= Img_dst->Height - BlurPixelRadius / 2)
+			{
+				for (l = 0; l < Img_dst->Num_channels; l++)
+				{
+					Img_dst->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] = Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l];
+				}
+				continue;
+			}
+			for (l = 0; l < Img_dst->Num_channels; l++)
+			{
+				Sybiraemo = 0;
+				Chislo2 = ((float)(NeighborCoefficient) / (pow((float)BlurPixelRadius, 2) - 1 - (12 + (2 * (BlurPixelRadius - 5)))));
+				
+				for (z = 0; z < BlurPixelRadius / 2; z++)
+				{
+					for (t = 0; t < BlurPixelRadius / 2; t++)
+					{
+						if (z == 0 && t == 0) continue;
+						Sybiraemo += Img_src->rgbpix[Img_dst->Num_channels * ((i - z)*Img_dst->Width + j - t) + l];
+						Sybiraemo += Img_src->rgbpix[Img_dst->Num_channels * ((i - z)*Img_dst->Width + j + t) + l];
+						Sybiraemo += Img_src->rgbpix[Img_dst->Num_channels * ((i + z)*Img_dst->Width + j - t) + l];
+						Sybiraemo += Img_src->rgbpix[Img_dst->Num_channels * ((i + z)*Img_dst->Width + j + t) + l];
+					}
+				}
+
+				Chislo2 *= Sybiraemo;
+				Chislo = 0;
+				Chislo = (1 - NeighborCoefficient)*Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] + (int)Chislo2;
+				
+				if (Chislo > 255)
+					Chislo = 255;
+				if (Chislo < 0)
+					Chislo = 0;
+				Img_dst->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] = Chislo;
+			}
+		}
+	}
+	return *Img_dst;
+}

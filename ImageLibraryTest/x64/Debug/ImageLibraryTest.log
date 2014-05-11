@@ -1,0 +1,15 @@
+﻿Build started 3/17/2014 10:17:20 PM.
+     1>Project "C:\PROJECTS\CV_Library\ImageLibraryTest\ImageLibraryTest.vcxproj" on node 2 (Build target(s)).
+       Project file contains ToolsVersion="12.0". This toolset is unknown or missing. You may be able to resolve this by installing the appropriate .NET Framework for this toolset. Treating the project as if it had ToolsVersion="4.0".
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /I"C:\Users\Petar\Desktop\jpeg-9a\jpeg-9a" /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D _UNICODE /D UNICODE /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TC /errorReport:prompt main.c
+         main.c
+       Link:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\link.exe /ERRORREPORT:PROMPT /OUT:"C:\PROJECTS\CV_Library\x64\Debug\ImageLibraryTest.exe" /INCREMENTAL /NOLOGO /LIBPATH:"C:\msys\1.0\home\petar.nikolov\jpeg-9a\.libs" "C:\Users\Petar\Desktop\jpeg-9a\jpeg-9a\.libs\*.o" kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"C:\PROJECTS\CV_Library\x64\Debug\ImageLibraryTest.pdb" /SUBSYSTEM:CONSOLE /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"C:\PROJECTS\CV_Library\x64\Debug\ImageLibraryTest.lib" /MACHINE:X64 x64\Debug\main.obj
+         x64\Debug\ReadWriteImage.obj
+     1>C:\Users\Petar\Desktop\jpeg-9a\jpeg-9a\.libs\jaricom.o : fatal error LNK1112: module machine type 'X86' conflicts with target machine type 'x64'
+     1>Done Building Project "C:\PROJECTS\CV_Library\ImageLibraryTest\ImageLibraryTest.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:00.85

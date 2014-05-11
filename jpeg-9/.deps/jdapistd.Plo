@@ -1,0 +1,35 @@
+jdapistd.lo jdapistd.o: jdapistd.c jinclude.h jconfig.h \
+  c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/include/stddef.h \
+  c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/stdlib.h \
+  c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/_mingw.h \
+  c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/stdio.h \
+  c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/include/stdarg.h \
+  c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/sys/types.h \
+  c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/string.h \
+  jpeglib.h jmorecfg.h jpegint.h jerror.h
+
+jinclude.h:
+
+jconfig.h:
+
+c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/include/stddef.h:
+
+c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/stdlib.h:
+
+c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/_mingw.h:
+
+c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/stdio.h:
+
+c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/include/stdarg.h:
+
+c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/sys/types.h:
+
+c:/MinGW/bin/../lib/gcc/mingw32/3.4.5/../../../../include/string.h:
+
+jpeglib.h:
+
+jmorecfg.h:
+
+jpegint.h:
+
+jerror.h:

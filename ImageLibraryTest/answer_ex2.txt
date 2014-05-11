@@ -1,0 +1,119 @@
+/* Exercise 2 - Brightness - Contrast modification */
+
+/* 
+	Correct   B R I G H T N E S S  - RGB and Lab only !
+*/
+struct Image BrightnessCorrection(struct Image *Img_src, struct Image *Img_dst, float Algo_paramBrightnessOrEV, int Algotype)
+{
+	int i, j, l;
+
+	if (Img_src->Num_channels != Img_dst->Num_channels)
+		return *Img_dst;
+	if (Img_src->ColorSpace != Img_dst->ColorSpace || Img_src->Width != Img_dst->Width)
+		SetDestination(Img_src, Img_dst);
+
+	if (Img_src->ColorSpace == 2) //RGB
+	{
+		if (Algotype == 1)
+		{
+			if (abs(Algo_paramBrightnessOrEV) > 1) Algo_paramBrightnessOrEV /= 100;
+
+			for (i = 0; i < Img_dst->Height; i++)
+			{
+				for (j = 0; j < Img_dst->Width; j++)
+				{
+					for (l = 0; l < Img_dst->Num_channels; l++)
+					{
+						if (Algo_paramBrightnessOrEV * Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] + Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l]> 255)
+							Img_dst->rgbpix[3 * (i*Img_dst->Width + j) + l] = 255;
+						else
+						{
+							if (Algo_paramBrightnessOrEV * Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] + Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] < 0)
+								Img_dst->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] = 0;
+							else
+								Img_dst->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] = Algo_paramBrightnessOrEV * Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] + Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l];
+						}
+					}
+				}
+			}
+		}
+		else if (Algotype == 2)
+		{
+			for (i = 0; i < Img_dst->Height; i++)
+			{
+				for (j = 0; j < Img_dst->Width; j++)
+				{
+					for (l = 0; l < Img_dst->Num_channels; l++)
+					{
+						if (pow(2, Algo_paramBrightnessOrEV) * Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] > 255)
+							Img_dst->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] = 255;
+						else if (pow(2, Algo_paramBrightnessOrEV) * Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] < 0)
+							Img_dst->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] = 0;
+						else
+							Img_dst->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] = pow(2, Algo_paramBrightnessOrEV) * Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l];
+					}
+				}
+			}
+		}
+	}
+	else if (Img_src->ColorSpace == 4) // Lab
+	{
+		if (abs(Algo_paramBrightnessOrEV) > 1) Algo_paramBrightnessOrEV /= 100;
+
+		for (i = 0; i < Img_dst->Height; i++)
+		{
+			for (j = 0; j < Img_dst->Width; j++)
+			{
+				float L, a, b;
+				L = Img_src->rgbpix[3 * (i * Img_dst->Width + j) + 0];
+				L = Algo_paramBrightnessOrEV * L  + L;
+
+				Img_dst->rgbpix[3 * (i * Img_src->Width + j) + 0] = L;
+				Img_dst->rgbpix[3 * (i * Img_src->Width + j) + 1] = Img_src->rgbpix[3 * (i * Img_dst->Width + j) + 1];
+				Img_dst->rgbpix[3 * (i * Img_src->Width + j) + 2] = Img_src->rgbpix[3 * (i * Img_dst->Width + j) + 2];
+			}
+		}
+	}
+
+	return *Img_dst;
+}
+
+/* 
+	Correct    C O N T R A S T 
+*/
+struct Image ContrastCorrection(struct Image *Img_src, struct Image *Img_dst, float percentage)
+{
+	/* The percentage value should be between -100 and 100*/
+	float pixel = 0;
+	float contrast = 0;
+	int i, j, l;
+
+	if (Img_src->Num_channels != Img_dst->Num_channels)
+		return *Img_dst;
+
+	if (percentage < -100) percentage = -100;
+	if (percentage > 100) percentage = 100;
+	contrast = (100.0 + percentage) / 100.0;
+
+	contrast *= contrast;
+
+	for (i = 0; i < Img_dst->Height; i++)
+	{
+		for (j = 0; j < Img_dst->Width; j++)
+		{
+			for (l = 0; l < Img_dst->Num_channels; l++)
+			{
+				pixel = (float)Img_src->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] / 255;
+				pixel -= 0.5;
+				pixel *= contrast;
+				pixel += 0.5;
+				pixel *= 255;
+				if (pixel < 0) pixel = 0;
+				if (pixel > 255) pixel = 255;
+				Img_dst->rgbpix[Img_dst->Num_channels * (i*Img_dst->Width + j) + l] = pixel;
+			}
+		}
+	}
+
+	return *Img_dst;
+}
